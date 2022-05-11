@@ -1,0 +1,28 @@
+2022-05-12 03:23:19.725  INFO DESKTOP-TSE11M0 --- [kground-preinit] o.h.v.i.u.Version                        : HV000001: Hibernate Validator 6.2.3.Final
+2022-05-12 03:23:19.761  INFO DESKTOP-TSE11M0 --- [           main] c.b.u.a.BlacklistUserAccountApplication  : Starting BlacklistUserAccountApplication using Java 11.0.8-internal on DESKTOP-TSE11M0 with PID 24024 (D:\Git\UserAccount\BlacklistUserAccount\target\classes started by ThinG in D:\Git\UserAccount\BlacklistUserAccount)
+2022-05-12 03:23:19.765  INFO DESKTOP-TSE11M0 --- [           main] c.b.u.a.BlacklistUserAccountApplication  : No active profile set, falling back to 1 default profile: "default"
+2022-05-12 03:23:20.273  INFO DESKTOP-TSE11M0 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-05-12 03:23:20.315  INFO DESKTOP-TSE11M0 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 34 ms. Found 1 JPA repository interfaces.
+2022-05-12 03:23:20.968  INFO DESKTOP-TSE11M0 --- [           main] o.s.b.w.e.t.TomcatWebServer              : Tomcat initialized with port(s): 8081 (http)
+2022-05-12 03:23:20.977  INFO DESKTOP-TSE11M0 --- [           main] o.a.c.h.Http11NioProtocol                : Initializing ProtocolHandler ["http-nio-8081"]
+2022-05-12 03:23:20.977  INFO DESKTOP-TSE11M0 --- [           main] o.a.c.c.StandardService                  : Starting service [Tomcat]
+2022-05-12 03:23:20.977  INFO DESKTOP-TSE11M0 --- [           main] o.a.c.c.StandardEngine                   : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-05-12 03:23:21.081  INFO DESKTOP-TSE11M0 --- [           main] o.a.c.c.C.[.[.[/]                        : Initializing Spring embedded WebApplicationContext
+2022-05-12 03:23:21.081  INFO DESKTOP-TSE11M0 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1285 ms
+2022-05-12 03:23:21.202  INFO DESKTOP-TSE11M0 --- [           main] o.h.j.i.u.LogHelper                      : HHH000204: Processing PersistenceUnitInfo [name: default]
+2022-05-12 03:23:21.241  INFO DESKTOP-TSE11M0 --- [           main] o.h.Version                              : HHH000412: Hibernate ORM core version 5.6.8.Final
+2022-05-12 03:23:21.363  INFO DESKTOP-TSE11M0 --- [           main] o.h.a.c.Version                          : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-05-12 03:23:21.442  INFO DESKTOP-TSE11M0 --- [           main] c.z.h.HikariDataSource                   : HikariPool-1 - Starting...
+2022-05-12 03:23:21.686  INFO DESKTOP-TSE11M0 --- [           main] c.z.h.HikariDataSource                   : HikariPool-1 - Start completed.
+2022-05-12 03:23:21.698  INFO DESKTOP-TSE11M0 --- [           main] o.h.d.Dialect                            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2022-05-12 03:23:22.215  INFO DESKTOP-TSE11M0 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-05-12 03:23:22.221  INFO DESKTOP-TSE11M0 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-05-12 03:23:22.586  WARN DESKTOP-TSE11M0 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2022-05-12 03:23:22.886  INFO DESKTOP-TSE11M0 --- [           main] o.a.c.h.Http11NioProtocol                : Starting ProtocolHandler ["http-nio-8081"]
+2022-05-12 03:23:22.903  INFO DESKTOP-TSE11M0 --- [           main] o.s.b.w.e.t.TomcatWebServer              : Tomcat started on port(s): 8081 (http) with context path ''
+2022-05-12 03:23:22.909  INFO DESKTOP-TSE11M0 --- [           main] c.b.u.a.BlacklistUserAccountApplication  : Started BlacklistUserAccountApplication in 3.417 seconds (JVM running for 4.097)
+2022-05-12 03:23:45.136  INFO DESKTOP-TSE11M0 --- [nio-8081-exec-1] o.a.c.c.C.[.[.[/]                        : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-05-12 03:23:45.136  INFO DESKTOP-TSE11M0 --- [nio-8081-exec-1] o.s.w.s.DispatcherServlet                : Initializing Servlet 'dispatcherServlet'
+2022-05-12 03:23:45.137  INFO DESKTOP-TSE11M0 --- [nio-8081-exec-1] o.s.w.s.DispatcherServlet                : Completed initialization in 1 ms
+2022-05-12 03:23:45.265  INFO DESKTOP-TSE11M0 --- [nio-8081-exec-1] c.b.u.a.c.BlacklistUserController        : BlacklistUserController checkBlacklistUser called. user: BlacklistUser [firstName=First Name, lastName=Last Name, active=null, error=[]]
+2022-05-12 03:23:45.313  INFO DESKTOP-TSE11M0 --- [nio-8081-exec-1] c.b.u.a.c.BlacklistUserController        : BlacklistUserController checkBlacklistUser response: true

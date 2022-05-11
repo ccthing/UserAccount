@@ -18,7 +18,7 @@ SonarQube plugins:
   - Configuration detection fot Code Quality and Security 1.2.0.267 (config)
 Global server settings:
   - sonar.core.id=147B411E-AYCk1Sg07rQnPp3OF0R5
-  - sonar.core.startTime=2022-05-09T02:01:13+0800
+  - sonar.core.startTime=2022-05-12T03:11:10+0800
   - sonar.forceAuthentication=true
 Project server settings:
 Project scanner properties:
@@ -32,7 +32,7 @@ Project scanner properties:
   - sonar.language=java
   - sonar.login=******
   - sonar.password=******
-  - sonar.projectBaseDir=C:\Users\User1\TestProject\UserAccount
+  - sonar.projectBaseDir=D:\Git\UserAccount\UserAccount
   - sonar.projectKey=UserAccount
   - sonar.projectName=UserAccount
   - sonar.projectVersion=1.0
@@ -42,4 +42,4 @@ Project scanner properties:
   - sonar.sourceEncoding=windows-1252
   - sonar.sources=src/main/java
   - sonar.verbose=true
-  - sonar.working.directory=C:\Users\User1\TestProject\UserAccount\.scannerwork
+  - sonar.working.directory=D:\Git\UserAccount\UserAccount\.scannerwork

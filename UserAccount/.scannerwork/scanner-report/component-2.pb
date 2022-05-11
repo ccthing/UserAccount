@@ -1,1 +1,1 @@
- 2javaX>hr=src/main/java/com/user/account/controller/UserController.java
+ 2javaXThr=src/main/java/com/user/account/controller/UserController.java
