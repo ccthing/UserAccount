@@ -1,10 +1,10 @@
-package com.user.account;
+package com.blacklist.user.account;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class UserAccountSubmissionApplicationTests {
+class BlacklistUserAccountApplicationTests {
 
 	@Test
 	void contextLoads() {
