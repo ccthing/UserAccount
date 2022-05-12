@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">UserAccount</a> &gt; <a href="index.source.html" class="el_package">com.user.account.controller</a> &gt; <span class="el_source">UserController.java</span></div><h1>UserController.java</h1><pre class="source lang-java linenums">package com.user.account.controller;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+import javax.websocket.server.PathParam;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.user.account.model.User;
+import com.user.account.service.UserService;
+
+
+@RestController
+@RequestMapping(&quot;user&quot;)
+@CrossOrigin
+<span class="fc" id="L31">public class UserController {</span>
+	
+<span class="fc" id="L33">	private static final Logger logger = LogManager.getLogger(UserController.class);</span>
+	
+	@Autowired
+	UserService userService;
+	
+	@GetMapping(&quot;/getAll&quot;)
+	public ResponseEntity&lt;List&lt;User&gt;&gt; getAllUsers(){
+<span class="fc" id="L40">		logger.info(&quot;UserController getAll called.&quot;);</span>
+<span class="fc" id="L41">		List&lt;User&gt; result = userService.getAllUserList();</span>
+<span class="fc" id="L42">		logger.info(&quot;UserController getAll response: {}&quot;, result.toString());</span>
+<span class="fc" id="L43">		return ResponseEntity.ok(result);</span>
+	}
+	
+	@GetMapping(&quot;/getAllByPage/{pageSize}/{pageNo}&quot;)
+	public ResponseEntity&lt;Page&lt;User&gt;&gt; getAllByPage(@PathVariable int pageSize, @PathVariable int pageNo){
+<span class="fc" id="L48">		logger.info(&quot;UserController getAllByPage called. pageSize: {} , pageNo: {} &quot;,pageSize, pageNo);</span>
+<span class="fc" id="L49">		Page&lt;User&gt; result = userService.getAllUserPage(pageNo, pageSize);</span>
+<span class="fc" id="L50">		logger.info(&quot;UserController getAllByPage response: {} : {}&quot;, result, result.getContent());</span>
+<span class="fc" id="L51">		return ResponseEntity.ok(result);</span>
+	}
+	
+	@PostMapping(&quot;/createUpdate&quot;)
+	public ResponseEntity&lt;List&lt;User&gt;&gt; createUpdateUser(@Valid @RequestBody User user){
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		logger.info(&quot;UserController createUpdateUser called. user: {}&quot;, user != null ? user.toString() : null);</span>
+<span class="fc" id="L57">		List&lt;User&gt; result = userService.createUpdateUser(user);</span>
+<span class="fc" id="L58">		logger.info(&quot;UserController createUpdateUser response: {}&quot;, result);</span>
+<span class="fc" id="L59">		return ResponseEntity.ok(result);</span>
+	}
+	
+	@PostMapping(&quot;/delete/{id}&quot;)
+	public ResponseEntity&lt;List&lt;User&gt;&gt; deleteUserById(@PathVariable Long id){
+<span class="fc" id="L64">		logger.info(&quot;UserController deleteUserById called. id: {}&quot;, id);</span>
+<span class="fc" id="L65">		User deleteUser = userService.getUserById(id);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		if(deleteUser != null) {</span>
+<span class="fc" id="L67">			userService.deleteUserById(id);</span>
+<span class="fc" id="L68">			List&lt;User&gt; users = userService.getAllUserList();</span>
+<span class="fc" id="L69">			logger.info(&quot;UserController deleteUserById response: {}&quot;, users);</span>
+<span class="fc" id="L70">			return ResponseEntity.ok(users);</span>
+		}else {
+<span class="fc" id="L72">			List&lt;User&gt; users = new ArrayList&lt;User&gt;();</span>
+<span class="fc" id="L73">			User errorUser = new User();</span>
+<span class="fc" id="L74">			List&lt;String&gt; errors = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L75">			errors.add(&quot;Unable to find user id: &quot; + id);</span>
+<span class="fc" id="L76">			errorUser.setErrors(errors);</span>
+<span class="fc" id="L77">			users.add(errorUser);</span>
+<span class="fc" id="L78">			logger.info(&quot;UserController deleteUserById response: {}&quot;, users);</span>
+<span class="fc" id="L79">			return ResponseEntity.ok(users);</span>
+		}
+		
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

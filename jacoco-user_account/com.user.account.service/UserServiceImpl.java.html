@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">UserAccount</a> &gt; <a href="index.source.html" class="el_package">com.user.account.service</a> &gt; <span class="el_source">UserServiceImpl.java</span></div><h1>UserServiceImpl.java</h1><pre class="source lang-java linenums">package com.user.account.service;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import javax.transaction.Transactional;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import com.user.account.model.User;
+import com.user.account.repository.UserRepository;
+
+@Service(&quot;UserService&quot;)
+<span class="fc" id="L35">public class UserServiceImpl implements UserService{</span>
+	
+<span class="fc" id="L37">	private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);</span>
+	
+	@Autowired
+	UserRepository userRepository;
+	
+	@Autowired
+	RestTemplate restTemplate;
+	
+	final static String BLACKLIST_USER_URL = &quot;http://localhost:8081/blacklist-user/checkBlacklistUser&quot;;
+	
+	final static String BLACKLIST_CALL_ERROR = &quot;Unable to call Blacklist API! Please try again later.&quot;;
+	
+<span class="fc" id="L49">	final static String BLACKLIST_ERROR = &quot;This user is blacklisted! First Name: {0}, Last Name: {1}&quot;;</span>
+	
+	@Override
+	public List&lt;User&gt; getAllUserList() {
+<span class="fc" id="L53">		return userRepository.findAll();</span>
+	}
+	
+	@Override
+	public Page&lt;User&gt; getAllUserPage(int pageNo, int pageSize) {
+<span class="fc" id="L58">		boolean result = validatePage(pageNo, pageSize);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		if(result) {</span>
+<span class="fc" id="L60">			List&lt;User&gt; errorUsers = new ArrayList&lt;User&gt;();</span>
+<span class="fc" id="L61">			User errorUser = new User();</span>
+<span class="fc" id="L62">			List&lt;String&gt; errors = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L63">			errors.add(&quot;pageNo and pageSize must larger than 0! pageNo: &quot;+ pageNo + &quot; pageSize: &quot; + pageSize);</span>
+<span class="fc" id="L64">			errorUser.setErrors(errors);</span>
+<span class="fc" id="L65">			errorUsers.add(errorUser);</span>
+<span class="fc" id="L66">			Page&lt;User&gt; errorPage = new PageImpl&lt;User&gt;(errorUsers); </span>
+			
+<span class="fc" id="L68">			return errorPage;</span>
+		}else {
+<span class="fc" id="L70">			Pageable pageable = PageRequest.of(pageNo - 1, pageSize);</span>
+<span class="fc" id="L71">			return userRepository.findAll(pageable);</span>
+		}
+	}
+	
+	private boolean validatePage(int pageNo, int pageSize) {
+<span class="pc bpc" id="L76" title="1 of 4 branches missed.">		if(pageNo &lt; 1 || pageSize &lt; 1) {</span>
+<span class="fc" id="L77">			return true;</span>
+		}
+		
+<span class="fc" id="L80">		return false;</span>
+	}
+
+	@Override
+	@Transactional
+	public List&lt;User&gt; createUpdateUser(User user) {
+<span class="fc bfc" id="L86" title="All 4 branches covered.">		if(user != null &amp;&amp; user.getId() != null) {</span>
+<span class="fc" id="L87">			return processExistingUser(user);</span>
+<span class="pc bpc" id="L88" title="1 of 4 branches missed.">		}else if(user != null &amp;&amp; user.getId() == null) {</span>
+			//Check New User 
+<span class="fc" id="L90">			return checkSaveUser(user);</span>
+		}else {
+			// User object null return error
+<span class="fc" id="L93">			List&lt;User&gt; errorUsers = new ArrayList&lt;User&gt;();</span>
+<span class="fc" id="L94">			User errorUser = new User();</span>
+<span class="fc" id="L95">			List&lt;String&gt; errors = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L96">			errors.add(&quot;User input cannot be empty!&quot;);</span>
+<span class="fc" id="L97">			errorUser.setErrors(errors);</span>
+<span class="fc" id="L98">			errorUsers.add(errorUser);</span>
+			
+<span class="fc" id="L100">			return errorUsers;</span>
+		}
+	}
+	
+	private List&lt;User&gt; processExistingUser(User user) {
+		//Check Existing User
+<span class="fc" id="L106">		Optional&lt;User&gt; existingUserOp = userRepository.findById(user.getId());</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		if(existingUserOp.isPresent()) {</span>
+<span class="fc" id="L108">			User existingUser = existingUserOp.get();</span>
+<span class="fc" id="L109">			user.setVersion(existingUser.getVersion());</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			if(existingUser.getEmail().equals(user.getEmail())) {</span>
+				//Same email no need check
+<span class="fc" id="L112">				userRepository.save(user);</span>
+<span class="fc" id="L113">				return userRepository.findAll();</span>
+			}else {
+				//updated email need check
+<span class="fc" id="L116">				return checkSaveUser(user);</span>
+			}
+		}else {
+			// User object null return error
+<span class="fc" id="L120">			List&lt;User&gt; errorUsers = new ArrayList&lt;User&gt;();</span>
+<span class="fc" id="L121">			User errorUser = new User();</span>
+<span class="fc" id="L122">			List&lt;String&gt; errors = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L123">			errors.add(&quot;Unable to find User Id! Id: &quot;+ user.getId());</span>
+<span class="fc" id="L124">			errorUser.setErrors(errors);</span>
+<span class="fc" id="L125">			errorUsers.add(errorUser);</span>
+			
+<span class="fc" id="L127">			return errorUsers;</span>
+		}
+	}
+	
+	private List&lt;User&gt; checkSaveUser(User user){
+		// Business validation
+		// Check existing email
+<span class="fc" id="L134">		List&lt;String&gt; errorList = validateEmail(user);</span>
+		// check blacklist user
+<span class="fc" id="L136">		errorList.addAll(checkBlacklistUser(user));</span>
+		
+<span class="fc bfc" id="L138" title="All 2 branches covered.">		if(CollectionUtils.isEmpty(errorList)) {</span>
+			//No Error
+<span class="fc" id="L140">			userRepository.save(user);</span>
+<span class="fc" id="L141">			return userRepository.findAll();</span>
+		}else {
+			//Set Error
+<span class="fc" id="L144">			List&lt;User&gt; errorUsers = new ArrayList&lt;User&gt;();</span>
+<span class="fc" id="L145">			user.setErrors(errorList);</span>
+<span class="fc" id="L146">			errorUsers.add(user);</span>
+<span class="fc" id="L147">			return errorUsers;</span>
+		}
+	}
+	
+	private List&lt;String&gt; checkBlacklistUser(User user){
+<span class="fc" id="L152">		List&lt;String&gt; errors = new ArrayList&lt;String&gt;();</span>
+		try {
+<span class="fc" id="L154">			HttpHeaders headers = new HttpHeaders();</span>
+<span class="fc" id="L155">			headers.add(HttpHeaders.ALLOW, MediaType.APPLICATION_JSON_VALUE);</span>
+<span class="fc" id="L156">			headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);</span>
+<span class="fc" id="L157">			headers.setContentType(MediaType.APPLICATION_JSON);</span>
+			
+<span class="fc" id="L159">			UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(BLACKLIST_USER_URL);</span>
+			
+<span class="fc" id="L161">			ResponseEntity&lt;Boolean&gt; responseObject = restTemplate.exchange(</span>
+<span class="fc" id="L162">					uriBuilder.build().encode().toUri(), </span>
+<span class="fc" id="L163">					HttpMethod.POST, </span>
+<span class="fc" id="L164">					new HttpEntity&lt;User&gt;(user,headers), </span>
+<span class="fc" id="L165">					new ParameterizedTypeReference&lt;Boolean&gt;() {</span>
+			});
+			
+<span class="pc bpc" id="L168" title="2 of 4 branches missed.">			if((responseObject.getStatusCode() == HttpStatus.OK) &amp;&amp; (responseObject.getBody() != null)) {</span>
+<span class="fc" id="L169">				Boolean response = responseObject.getBody();</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">				if(response) {</span>
+					//Is blacklisted user
+<span class="fc" id="L172">					String errorMsg = MessageFormat.format(BLACKLIST_ERROR, user.getFirstName(), user.getLastName());</span>
+<span class="fc" id="L173">					errors.add(errorMsg);</span>
+				}
+			}
+<span class="fc" id="L176">		}catch (RestClientException e) {</span>
+			// Error call to blacklist user api
+<span class="fc" id="L178">			logger.error(e);</span>
+<span class="fc" id="L179">			errors.add(BLACKLIST_CALL_ERROR);</span>
+		}
+		
+<span class="fc" id="L182">		return errors;</span>
+	}
+	
+	private List&lt;String&gt; validateEmail(User user){
+<span class="fc" id="L186">		List&lt;String&gt; errors = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L187">		List&lt;User&gt; users = userRepository.getUsersByEmail(user.getEmail());</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">		if(!CollectionUtils.isEmpty(users)) {</span>
+<span class="fc" id="L189">			errors.add(&quot;Email address already used!&quot;);</span>
+		}
+		
+<span class="fc" id="L192">		return errors;</span>
+	}
+
+	@Override
+	public User getUserById(Long id) {
+<span class="fc" id="L197">		Optional&lt;User&gt; optionalUser = userRepository.findById(id);</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">		if(!optionalUser.isEmpty()) {</span>
+<span class="fc" id="L199">			return optionalUser.get();</span>
+		}
+		
+<span class="fc" id="L202">		return null;</span>
+	}
+
+	@Override
+	@Transactional
+	public void deleteUserById(Long id) {
+<span class="fc" id="L208">		userRepository.deleteById(id);</span>
+<span class="fc" id="L209">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
